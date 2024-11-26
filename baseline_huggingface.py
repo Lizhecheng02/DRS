@@ -53,7 +53,8 @@ def main():
             try:
                 if args.type == "zs":
                     messages = [{"role": "user", "content": f"Here is a context: {context}.\nHere is a question: {question}.\nCan you minimally edit the question so that it becomes answerable?"}]
-                    new_question = get_response_hf(pipeline=pipeline, messages=messages)
+                    new_question = get_response_hf(pipeline=pipeline, messages=messages, max_tokens=64)
+                    new_question = get_response_openai(model="gpt-4o-mini", prompt=f"Extract the reformulated question from the following output:\n{new_question}\n.Return the reformulated question only.", temperature=0.0)
                 elif args.type == "zscot":
                     messages = [{"role": "user", "content": f"Here is a context: {context}.\nHere is a question: {question}.\nCan you think step by step to reason about the minimal edits you can make to reformulate the question so that the question answerable? Lay out your work and return your reformulated question."}]
                     new_question = get_response_hf(pipeline=pipeline, messages=messages)
@@ -66,7 +67,8 @@ def main():
                         messages.append({"role": "user", "content": f"Here is a context: {context}.\nHere is a question: {question}.\nCan you minimally edit the question so that it becomes answerable?"})
                         messages.append({"role": "assistant", "content": one["correction"]})
                     messages.append({"role": "user", "content": f"Here is a context: {context}.\nHere is a question: {question}.\nCan you minimally edit the question so that it becomes answerable?"})
-                    new_question = get_response_hf(pipeline=pipeline, messages=messages)
+                    new_question = get_response_hf(pipeline=pipeline, messages=messages, max_tokens=64)
+                    new_question = get_response_openai(model="gpt-4o-mini", prompt=f"Extract the reformulated question from the following output:\n{new_question}\n.Return the reformulated question only.", temperature=0.0)
                 elif args.type == "fscot":
                     messages = []
                     for one in fewshot:
