@@ -1,0 +1,5 @@
+subset_name: "squad_v2" # "yelp", "bbc", "reddit", "qa2", "squad_v2", "bandit_qa"
+run_model: "gpt-3.5-turbo-0125"
+run_model_platform: "openai" # "openai", "huggingface"
+task: "reformulate"
+type: "zs" # "zs", "zscot", "fs", "fscot"
