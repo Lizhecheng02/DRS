@@ -59,7 +59,7 @@ python baseline_openai.py | python baseline_huggingface.py
 python drs_openai.py | python drs_huggingface.py
 ```
 
-------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #### Datasets
 
@@ -67,7 +67,7 @@ You could download the [CouldAsk](https://huggingface.co/datasets/wentingzhao/co
 
 ![dataset](./Figs/dataset.png)
 
-------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #### Experiments
 
@@ -77,6 +77,8 @@ To demonstrate the effectiveness of our proposed zero-shot DRS method, we test i
 To explore the impact of this parameter on the performance of our zero-shot DRS method, we conduct experiments with varying numbers of candidate questions and observe how accuracy changes. We set the number of candidate questions from 1 to 5 for each LLM and test on all datasets, with the results shown in the figure below. 
 
 ![candidate](./Figs/candidate.png)
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #### Questions?
 If you have any questions related to the repo or the paper, or you encounter any problems when using the code, feel free to email Zhecheng Li (zhl186@ucsd.edu).
