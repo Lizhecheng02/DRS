@@ -1,13 +1,13 @@
 ## DRS: Deep Question Reformulation With Structured Output
 
-This is the repository for our paper [DRS: Deep Question Reformulation With Structured Output]()
+This is the repository for our paper [DRS: Deep Question Reformulation With Structured Output](https://arxiv.org/pdf/2411.17993)
 
 In this paper, our proposed DRS method leverages LLMs and the DFS-based algorithm to iteratively search for possible entity combinations and constrain the output with certain entities, effectively improving the capabilities of LLMs in question reformulation.
 
 Our approach consists of three main steps: 
 
 - Entity Extraction and Filtering, where LLMs are used to extract core entities and classify extracted entities to preserve certain types of entities.
-- Entity Combination Search and Structured Output Generation, which employs a DFS-based algorithm to identify entity combinations to form answerable questions with entity constraint.
+- DFS Entity Combination Search and Structured Output Generation, which employs a DFS-based algorithm to identify entity combinations to form answerable questions with entity constraint.
 - DFS Pruning and Candidate Selection, where we limit the number of candidate questions and search depth through DFS pruning, then select the most reliable question from the candidate table according to question content and entity number for final output.
 
 <img src="./Figs/algorithm.png" alt="algorithm" style="zoom:80%;" />
