@@ -2,7 +2,7 @@ import argparse
 import yaml
 import re
 import warnings
-from utils import get_couldask, get_response_openai, llm_eval_answerable, get_response_openai_reproduce
+from utils import get_couldask, get_response_openai_messages, llm_eval_answerable, get_response_openai_prompt
 from tqdm import tqdm
 from datasets import load_dataset
 warnings.filterwarnings("ignore")
@@ -43,10 +43,10 @@ def main():
             try:
                 if args.type == "zs":
                     messages = [{"role": "user", "content": f"Here is a context: {context}.\nHere is a question: {question}.\nCan you minimally edit the question so that it becomes answerable?"}]
-                    new_question = get_response_openai_reproduce(model=args.run_model, messages=messages, temperature=0.0)
+                    new_question = get_response_openai_messages(model=args.run_model, messages=messages, temperature=0.0)
                 elif args.type == "zscot":
                     messages = [{"role": "user", "content": f"Here is a context: {context}.\nHere is a question: {question}.\nCan you think step by step to reason about the minimal edits you can make to reformulate the question so that the question answerable? Lay out your work and return your reformulated question within <question> tags."}]
-                    new_question = get_response_openai_reproduce(model=args.run_model, messages=messages, temperature=0.0)
+                    new_question = get_response_openai_messages(model=args.run_model, messages=messages, temperature=0.0)
                     new_question = re.search(r"<question>(.*?)</question>", new_question, re.DOTALL).group(1).strip()
                 elif args.type == "fs":
                     messages = []
@@ -56,7 +56,7 @@ def main():
                         messages.append({"role": "user", "content": f"Here is a context: {context}.\nHere is a question: {question}.\nCan you minimally edit the question so that it becomes answerable?"})
                         messages.append({"role": "assistant", "content": one["correction"]})
                     messages.append({"role": "user", "content": f"Here is a context: {context}.\nHere is a question: {question}.\nCan you minimally edit the question so that it becomes answerable?"})
-                    new_question = get_response_openai_reproduce(model=args.run_model, messages=messages, temperature=0.0)
+                    new_question = get_response_openai_messages(model=args.run_model, messages=messages, temperature=0.0)
                 elif args.type == "fscot":
                     messages = []
                     for one in fewshot:
@@ -65,10 +65,10 @@ def main():
                         messages.append({"role": "user", "content": f"Here is a context: {context}.\nHere is a question: {question}.\nCan you think step by step to reason about the minimum edits you can make to reformulate the question so that the question answerable? Lay out your work."})
                         messages.append({"role": "assistant", "content": one["cot_q"]})
                     messages.append({"role": "user", "content": f"Here is a context: {context}.\nHere is a question: {question}.\nCan you think step by step to reason about the minimum edits you can make to reformulate the question so that the question answerable? Lay out your work and return your reformulated question within <question> tags."})
-                    new_question = get_response_openai_reproduce(model=args.run_model, messages=messages, temperature=0.0)
+                    new_question = get_response_openai_messages(model=args.run_model, messages=messages, temperature=0.0)
                     new_question = re.search(r"<question>(.*?)</question>", new_question, re.DOTALL).group(1).strip()
                     
-                entities_overlap = get_response_openai(model="gpt-4o-mini", prompt=f"This is an original question: {question}, it contains the following entities: {row['entities']}.\nThis is a new question: {new_question}.\nTell me the number of overlapping entities between the new question and the original question, they do not need to be strictly the same, as long as mentioned, uppercase or lowercase doesn't matter. Give your analysis within <analysis> tags and only return the math number of overlap entities within <answer> tags.")
+                entities_overlap = get_response_openai_prompt(model="gpt-4o-mini", prompt=f"This is an original question: {question}, it contains the following entities: {row['entities']}.\nThis is a new question: {new_question}.\nTell me the number of overlapping entities between the new question and the original question, they do not need to be strictly the same, as long as mentioned, uppercase or lowercase doesn't matter. Give your analysis within <analysis> tags and only return the math number of overlap entities within <answer> tags.")
                 original_entities_num = len(row["entities"])
                 entities_overlap = re.search(r"<answer>(.*?)</answer>", entities_overlap, re.DOTALL).group(1).strip()
                 overlap_entites_num = int(entities_overlap)

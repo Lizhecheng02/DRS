@@ -4,7 +4,7 @@ import torch
 import re
 import warnings
 import transformers
-from utils import get_couldask, get_response_openai, llm_eval_answerable, get_response_hf
+from utils import get_couldask, get_response_openai_prompt, llm_eval_answerable, get_response_hf
 from tqdm import tqdm
 warnings.filterwarnings("ignore")
 
@@ -120,7 +120,7 @@ def main():
 
                     new_question = drs(question_entities=question_entities, context=context, pipeline=pipeline)
 
-                    entities_overlap = get_response_openai(model="gpt-4o-mini", prompt=f"This is an original question: {question}, it contains the following entities: {row['entities']}.\nThis is a new question: {new_question}.\nTell me the number of overlapping entities between the new question and the original question, they do not need to be strictly the same, as long as mentioned, uppercase, lowercase or format doesn't matter. Give your analysis within <analysis> tag, and only return the math number of overlap entities within <answer> tags.")
+                    entities_overlap = get_response_openai_prompt(model="gpt-4o-mini", prompt=f"This is an original question: {question}, it contains the following entities: {row['entities']}.\nThis is a new question: {new_question}.\nTell me the number of overlapping entities between the new question and the original question, they do not need to be strictly the same, as long as mentioned, uppercase, lowercase or format doesn't matter. Give your analysis within <analysis> tag, and only return the math number of overlap entities within <answer> tags.")
                     original_entities_num = len(row["entities"])
                     entities_overlap = re.search(r"<answer>(.*?)</answer>", entities_overlap, re.DOTALL).group(1).strip()
                     overlap_entites_num = int(entities_overlap)

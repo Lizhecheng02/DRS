@@ -2,7 +2,7 @@ import argparse
 import yaml
 import re
 import warnings
-from utils import get_couldask, get_response_openai, llm_eval_answerable
+from utils import get_couldask, get_response_openai_prompt, llm_eval_answerable
 from tqdm import tqdm
 warnings.filterwarnings("ignore")
 
@@ -34,12 +34,12 @@ def drs(question_entities, context, model):
             if question_entities[i] not in entities and (len(entities) == 0 or i > question_entities.index(entities[-1])):
                 if len(entities) + 1 >= int((n + 1) / 2):
                     entities.append(question_entities[i])
-                    modified_question = get_response_openai(
+                    modified_question = get_response_openai_prompt(
                         model=model,
                         prompt=f"According to the following text:\n<text>{context}</text>\nGenerate a statement you could get from the given text that contains all following entities: [{', '.join(entities)}]. Then you are required to generate a question contains all given entities, which could be answered from your statement. Return the statement within <statement> tags and the question within <question> tags."
                     )
                     modified_question = re.search(r"<question>(.*?)</question>", modified_question, re.DOTALL).group(1).strip()
-                    check = get_response_openai(
+                    check = get_response_openai_prompt(
                         model=model,
                         prompt=f"Here is a question: {modified_question}. Does it contain all following entities: [{', '.join(entities)}]?. They do not need to be strictly the same, as long as mentioned, uppercase or lowercase doesn't matter. Think carefully, return your answer 'yes' or 'no' within <check> tags."
                     )
@@ -63,7 +63,7 @@ def drs(question_entities, context, model):
         for i, question in enumerate(result["final_question"]):
             prompt += f"Question {i + 1}: {question} - Entity Num: {result['num_used_entity'][i]}\n"
         prompt += "Give your analysis within <analysis> tags and return the id number of the chosen question within <id> tags. For example, <id>4</id> means the 4th question is the most answerable one."
-        response = get_response_openai(model=model, prompt=prompt)
+        response = get_response_openai_prompt(model=model, prompt=prompt)
         response = re.search(r"<id>(.*?)</id>", response, re.DOTALL).group(1).strip()
     return result["final_question"][int(response) - 1]
 
@@ -95,7 +95,7 @@ def main():
 
             try:
                 if args.run_model_platform == "openai":
-                    entities_response = get_response_openai(
+                    entities_response = get_response_openai_prompt(
                         model=args.run_model, 
                         prompt=f"Find out all entities in the following question: {question}. Only return the entities, separated by comma and space."
                     )
@@ -104,7 +104,7 @@ def main():
 
                     question_entities_filtered = []
                     for entity in question_entities:
-                        response = get_response_openai(
+                        response = get_response_openai_prompt(
                             model=args.run_model, 
                             prompt=f"Here is a question:<question>{question}</question>\nHere is an entity in this question:<entity>{entity}</entity>.\nTell me which category does this entity belong to in the given question - subject, object, predicate, attribute or others. Give your analysis within <analysis> tags, and only return its category name within <answer> tags."
                         )
@@ -115,7 +115,7 @@ def main():
 
                     new_question = drs(question_entities=question_entities, context=context, model=args.run_model)
 
-                    entities_overlap = get_response_openai(
+                    entities_overlap = get_response_openai_prompt(
                         model="gpt-4o-mini", 
                         prompt=f"This is an original question: {question}, it contains the following entities: {row['entities']}.\nThis is a new question: {new_question}.\nTell me the number of overlapping entities between the new question and the original question, they do not need to be strictly the same, as long as mentioned, uppercase or lowercase doesn't matter. Give your analysis within <analysis> tags and only return the math number of overlap entities within <answer> tags."
                     )

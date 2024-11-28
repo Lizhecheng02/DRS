@@ -4,7 +4,7 @@ import re
 import torch
 import warnings
 import transformers
-from utils import get_couldask, get_response_openai, llm_eval_answerable, get_response_hf
+from utils import get_couldask, get_response_openai_prompt, llm_eval_answerable, get_response_hf
 from tqdm import tqdm
 from datasets import load_dataset
 warnings.filterwarnings("ignore")
@@ -54,11 +54,11 @@ def main():
                 if args.type == "zs":
                     messages = [{"role": "user", "content": f"Here is a context: {context}.\nHere is a question: {question}.\nCan you minimally edit the question so that it becomes answerable?"}]
                     new_question = get_response_hf(pipeline=pipeline, messages=messages, max_tokens=64)
-                    new_question = get_response_openai(model="gpt-4o-mini", prompt=f"Extract the reformulated question from the following output:\n{new_question}\n.Return the reformulated question only.", temperature=0.0)
+                    new_question = get_response_openai_prompt(model="gpt-4o-mini", prompt=f"Extract the reformulated question from the following output:\n{new_question}\n.Return the reformulated question only.", temperature=0.0)
                 elif args.type == "zscot":
                     messages = [{"role": "user", "content": f"Here is a context: {context}.\nHere is a question: {question}.\nCan you think step by step to reason about the minimal edits you can make to reformulate the question so that the question answerable? Lay out your work and return your reformulated question."}]
                     new_question = get_response_hf(pipeline=pipeline, messages=messages)
-                    new_question = get_response_openai(model="gpt-4o-mini", prompt=f"Extract the reformulated question from the following output:\n{new_question}\n.Return the reformulated question only.", temperature=0.0)
+                    new_question = get_response_openai_prompt(model="gpt-4o-mini", prompt=f"Extract the reformulated question from the following output:\n{new_question}\n.Return the reformulated question only.", temperature=0.0)
                 elif args.type == "fs":
                     messages = []
                     for one in fewshot:
@@ -68,7 +68,7 @@ def main():
                         messages.append({"role": "assistant", "content": one["correction"]})
                     messages.append({"role": "user", "content": f"Here is a context: {context}.\nHere is a question: {question}.\nCan you minimally edit the question so that it becomes answerable?"})
                     new_question = get_response_hf(pipeline=pipeline, messages=messages, max_tokens=64)
-                    new_question = get_response_openai(model="gpt-4o-mini", prompt=f"Extract the reformulated question from the following output:\n{new_question}\n.Return the reformulated question only.", temperature=0.0)
+                    new_question = get_response_openai_prompt(model="gpt-4o-mini", prompt=f"Extract the reformulated question from the following output:\n{new_question}\n.Return the reformulated question only.", temperature=0.0)
                 elif args.type == "fscot":
                     messages = []
                     for one in fewshot:
@@ -78,9 +78,9 @@ def main():
                         messages.append({"role": "assistant", "content": one["cot_q"]})
                     messages.append({"role": "user", "content": f"Here is a context: {context}.\nHere is a question: {question}.\nCan you think step by step to reason about the minimum edits you can make to reformulate the question so that the question answerable? Lay out your work and return your reformulated question."})
                     new_question = get_response_hf(pipeline=pipeline, messages=messages)
-                    new_question = get_response_openai(model="gpt-4o-mini", prompt=f"Extract the reformulated question from the following output:\n{new_question}\n.Return the reformulated question only.", temperature=0.0)
+                    new_question = get_response_openai_prompt(model="gpt-4o-mini", prompt=f"Extract the reformulated question from the following output:\n{new_question}\n.Return the reformulated question only.", temperature=0.0)
                     
-                entities_overlap = get_response_openai(model="gpt-4o-mini", prompt=f"This is an original question: {question}, it contains the following entities: {row['entities']}.\nThis is a new question: {new_question}.\nTell me the number of overlapping entities between the new question and the original question, they do not need to be strictly the same, as long as mentioned, uppercase or lowercase doesn't matter. Give your analysis within <analysis> tag, and only return the math number of overlap entities within <answer> tags.")
+                entities_overlap = get_response_openai_prompt(model="gpt-4o-mini", prompt=f"This is an original question: {question}, it contains the following entities: {row['entities']}.\nThis is a new question: {new_question}.\nTell me the number of overlapping entities between the new question and the original question, they do not need to be strictly the same, as long as mentioned, uppercase or lowercase doesn't matter. Give your analysis within <analysis> tag, and only return the math number of overlap entities within <answer> tags.")
                 original_entities_num = len(row["entities"])
                 entities_overlap = re.search(r"<answer>(.*?)</answer>", entities_overlap, re.DOTALL).group(1).strip()
                 overlap_entites_num = int(entities_overlap)
