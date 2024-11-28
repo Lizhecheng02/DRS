@@ -1,6 +1,6 @@
 ## DRS: Deep Question Reformulation With Structured Output
 
-This is the repository for our paper [DRS: Deep Question Reformulation With Structured Output](https://arxiv.org/pdf/2411.17993)
+This is the repository for our paper [DRS: Deep Question Reformulation With Structured Output](https://arxiv.org/abs/2411.17993)
 
 In this paper, our proposed DRS method leverages LLMs and the DFS-based algorithm to iteratively search for possible entity combinations and constrain the output with certain entities, effectively improving the capabilities of LLMs in question reformulation.
 
