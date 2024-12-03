@@ -72,6 +72,7 @@ You could download the [CouldAsk](https://huggingface.co/datasets/wentingzhao/co
 #### Experiments
 
 To demonstrate the effectiveness of our proposed zero-shot DRS method, we test it on six datasets, totaling over 1,700 data points, using four different LLMs. We conduct a fair and thorough comparison between our method and four baseline methods from previous research, with all accuracy scores presented in the table below.
+
 <img src="./Figs/score.png" alt="score" style="zoom:100%;" />
 
 To explore the impact of this parameter on the performance of our zero-shot DRS method, we conduct experiments with varying numbers of candidate questions and observe how accuracy changes. We set the number of candidate questions from 1 to 5 for each LLM and test on all datasets, with the results shown in the figure below. 

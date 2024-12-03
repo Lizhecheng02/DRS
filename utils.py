@@ -55,11 +55,12 @@ def get_response_openai_messages(model, messages, temperature=0.0, top_p=0.95, m
     return response
 
 
-def get_response_hf(pipeline, messages, temperature=0.01, top_p=0.95, max_tokens=512):
+def get_response_hf(pipeline, messages, temperature=0.0, top_p=0.95, max_tokens=512):
     outputs = pipeline(
         messages,
         max_new_tokens=max_tokens,
         top_p=top_p,
-        temperature=temperature
+        temperature=temperature,
+        do_sample=False
     )
     return outputs[0]["generated_text"][-1]["content"].strip()
